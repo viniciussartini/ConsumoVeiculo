@@ -1,3 +1,6 @@
+using ConsumoVeiculo.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace ConsumoVeiculo
 {
     public class Program
@@ -9,6 +12,7 @@ namespace ConsumoVeiculo
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+            builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
