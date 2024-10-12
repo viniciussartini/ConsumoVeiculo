@@ -2,6 +2,7 @@
 using ConsumoVeiculo.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace ConsumoVeiculo.Controllers
 {
@@ -121,6 +122,33 @@ namespace ConsumoVeiculo.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Relatorio(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var veiculo = await _context.Veiculos.FindAsync(id);
+
+            if (veiculo == null)
+            {
+                return NotFound();
+            }
+
+            var consumos = await _context.Consumos
+                .Where(consumo => consumo.VeiculoId == id)
+                .OrderByDescending(consumo => consumo.Data)
+                .ToListAsync();
+
+            decimal total = consumos.Sum(consumo => consumo.Valor);
+
+            ViewBag.Veiculo = veiculo;
+            ViewBag.Total = total;
+
+            return View(consumos);
         }
 
        /*public JsonResult GetDados() 

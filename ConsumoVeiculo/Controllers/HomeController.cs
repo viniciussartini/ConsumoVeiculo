@@ -15,7 +15,7 @@ namespace ConsumoVeiculo.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Veiculo");
         }
 
         public IActionResult Privacy()
