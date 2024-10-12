@@ -122,5 +122,17 @@ namespace ConsumoVeiculo.Controllers
 
             return RedirectToAction("Index");
         }
+
+       /*public JsonResult GetDados() 
+        {
+            var dados = _context.Veiculos.Select(veiculo => new {
+                veiculo.Id,
+                veiculo.Nome,
+                veiculo.Placa,
+                veiculo.AnoFabricacao,
+                veiculo.AnoModelo
+            }).ToList();
+            return Json(dados);
+        }*/
     }
 }
