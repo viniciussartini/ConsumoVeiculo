@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using ConsumoVeiculo.Data;
 using ConsumoVeiculo.Models;
 using BCrypt.Net;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 
 namespace ConsumoVeiculo.Controllers
 {
@@ -20,13 +22,66 @@ namespace ConsumoVeiculo.Controllers
             _context = context;
         }
 
-        // GET: Usuarios
         public async Task<IActionResult> Index()
         {
             return View(await _context.Usuarios.ToListAsync());
         }
 
-        // GET: Usuarios/Details/5
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(Usuario usuario)
+        {
+            var dados = await _context.Usuarios.FindAsync(usuario.Id);
+
+            if (dados == null)
+            {
+                ViewBag.Message = "Usuário e/ou senha inválidos";
+                return View();
+            }
+
+            bool senhaValida = BCrypt.Net.BCrypt.Verify(usuario.Senha, dados.Senha);
+
+            if (senhaValida)
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, dados.Nome),
+                    new Claim(ClaimTypes.NameIdentifier, dados.Id.ToString()),
+                    new Claim(ClaimTypes.Role, dados.Perfil.ToString())
+                };
+
+                var usuarioIdentity = new ClaimsIdentity(claims, "login");
+                ClaimsPrincipal principal = new ClaimsPrincipal(usuarioIdentity);
+
+                var properties = new AuthenticationProperties
+                {
+                    AllowRefresh = true,
+                    ExpiresUtc = DateTime.UtcNow.ToLocalTime().AddHours(8),
+                    IsPersistent = true
+                };
+
+                await HttpContext.SignInAsync(principal, properties);
+
+                return Redirect("/");
+            }
+            else
+            {
+                ViewBag.Message = "Usuário e/ou senha inválidos";
+            }
+
+            return View();
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return RedirectToAction("Login", "Usuarios");
+        }
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
