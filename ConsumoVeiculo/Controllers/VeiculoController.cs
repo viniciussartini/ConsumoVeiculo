@@ -1,11 +1,13 @@
 ﻿using ConsumoVeiculo.Data;
 using ConsumoVeiculo.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 
 namespace ConsumoVeiculo.Controllers
 {
+    [Authorize]
     public class VeiculoController : Controller
     {
         private readonly AppDbContext _context;

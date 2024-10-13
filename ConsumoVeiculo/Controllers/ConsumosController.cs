@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ConsumoVeiculo.Data;
 using ConsumoVeiculo.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ConsumoVeiculo.Controllers
 {
+    [Authorize]
     public class ConsumosController : Controller
     {
         private readonly AppDbContext _context;
